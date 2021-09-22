@@ -1,0 +1,202 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% block content %}
+          <div class="row book_time_slot">
+            <div class="col-md-12 mb-5">
+                <h2>Book Your Time Slot</h2>
+            </div>
+            <div class="col-md-5">
+                <div class="row mb-5 booked_time_slot">
+                    <div class="col-md-12 mb-3">
+                        <h3 align='center'>Booked Time Slots</h3>
+                        {% if error %}
+                        <div class="alert alert-warning">{{error}}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-12">
+                        <div class="row">
+                          {% if cp %}
+                            {% for p in cp %}
+                              <div class="ChargePoint">
+                                <div class="ChargePoint_num">
+                                  <h4>Charge {{ p.point_number }}</h4>
+                                </div>
+                                <div class="ChargePoint_slots">
+                                  {% for slot in slots %}
+                                    {% if slot.charge_point_number == p.point_number %}
+                                      <div class="slot">{{ slot.slot_booked_time }}</div>
+                                    {% endif %}
+                                  {% endfor %}
+                                </div>
+                              </div>
+                            {% endfor %}
+                          {% else %}
+                          <h4>No Charge Points available</h4>
+                          {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="row booked_time_slot">
+                  <div class="col-md-12 mb-3">
+                      <h3 align='center'>Your Time Slots</h3>
+                  </div>
+                  <div class="col-md-12">
+                      <div class="row">
+                        {% if cp %}
+                          {% for p in cp %}
+                            <div class="ChargePoint">
+                              <div class="ChargePoint_num">
+                                <h4>Charge {{ p.point_number }}</h4>
+                              </div>
+                              <div class="ChargePoint_slots">
+                                {% for slot in slots %}
+                                  {% if slot.user == user %}
+                                    {% if slot.charge_point_number == p.point_number %}
+                                      <div class="slot">{{ slot.slot_booked_time }} <span class="fa fa-times-circle" onclick="open_modal('{{slot.slot_booked_time}}', '{{ slot.id }}')"></span> </div>
+                                    {% endif %}
+                                  {% endif %}
+                                {% endfor %}
+                              </div>
+                            </div>
+                          {% endfor %}
+                        {% else %}
+                        <h4>No Charge Points available</h4>
+                        {% endif %}
+                      </div>
+                  </div>
+              </div>
+              </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-5">
+              <div class="row booking_time_slot">
+                <div class="col-md-12 mb-3">
+                  <h3 align='center'>Book Your Time Slot - Available Time Slots</h3>
+                </div>
+                <div class="col-md-12">
+                  <div class="accordion" id="accordionExample">
+                    {% for point in cp %}
+                    {% with point.id as num %}
+                      <div class="card">
+                        <div class="card-header" id="heading{{ point.point_number }}">
+                          <h2 class="mb-0">
+                            <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#{{ num }}" aria-expanded="true" aria-controls="{{ num }}">
+                              {{ point.point_number }}
+                            </button>
+                          </h2>
+                        </div>
+                    
+                        <div id="{{ num }}" class="collapse show" aria-labelledby="heading{{ num }}" data-parent="#accordionExample">
+                          <div class="card-body">
+                            <div class="row">
+                              <div class="col-md-12">
+                                <div class="row">
+                                  <div class="ChargePoint_slots">
+                                    <!-- <p class="slot">outside with {{ slot_id }}</p> -->
+                                    {% for  key, values in slot_s.items %}
+                                      {% if key == point.point_number %}
+                                          {% for value in values %}
+                                            {% if value.status == 'not booked' %}
+                                                <p class="slot" onclick="getValue('{{ value.time }}','{{ point.point_number }}')" disabled>{{ value.time }}</p>
+                                              {% elif value.status == 'booked' %}
+                                                {% if value.point == point.point_number %}
+                                                  <p class="slot alert-danger" disabled>{{ value.time }}</p>
+                                                {% else %}
+                                                  <p class="slot" onclick="getValue('{{ value.time }}','{{ point.point_number }}')" disabled>{{ value.time }}</p>
+                                                {% endif %}
+                                              {% endif %}
+                                          {% endfor %}
+                                      {% endif %}
+                                    {% endfor %}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      {% endwith %}
+                    {% endfor %} 
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <form action="" method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                      <input type="time" name="booking_time" id="time" required hidden>
+                      <input type="text" name="charge_point" id="point" required hidden>
+                    </div>
+                    <p class="btn btn-secondary mb-3" id="book" onclick="openPayOption()" hidden>Book</p>
+                    <div class="w-100 d-none flex-column align-items-center" id='payment'>
+                      <div class="form-group">
+                        <label for="debit_card">Debit Card Number</label>
+                        <input type="text" name="debit_card" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="cvv">CVV</label>
+                        <input type="password" name="cvv" required>
+                      </div>
+                      <div class="form-group">
+                        <label for="pin">Pin</label>
+                        <input type="password" name="pin" required>
+                      </div>
+                      <button class="btn btn-secondary" type="submit">Pay <span class="fa fa-chevron-right pay"></span></button>
+                    </div>  
+                    </form>
+                </div> 
+              </div>
+            </div>
+          </div>
+        </div>
+        <div onclick="closeModal()" id="modalContainer" class="d-none">
+          <form method="post" action="{% url 'deleteslot' %}" class="modalBox">
+              {% csrf_token %}
+              <span class="deleteText">Are You Sure!!</span>
+              <div>
+                  <input type="text" name="remove_time" id="remove_time" value="" hidden>
+                  <input type="text" name="slot_id" id="slot_id" value="" hidden>
+                  <button class="btn btn-danger" type="submit" id='delete'>Yes</button>
+                  <a class="btn btn-default" onclick="closeModal()" id='closeDelete'>No</a>
+              </div>
+          </form>
+        </div>
+        <script>
+          function open_modal(time, id){
+              disableScroll()
+              document.getElementById('remove_time').value = time
+              document.getElementById('slot_id').value = id
+              container = document.getElementById('modalContainer')
+              container.classList.replace('d-none', 'modalContainer')
+          }
+
+          function closeModal(e){
+                  container = document.getElementById('modalContainer')
+                  container.classList.replace('modalContainer', 'd-none')
+                  enableScroll()
+          }
+
+          function disableScroll() {
+            window.scrollTo(0, 0)
+            window.onscroll = function() {
+                window.scrollTo(0, 0);
+            };
+          }
+    
+          function enableScroll() {
+              window.onscroll = function() {};
+          }
+
+          const getValue = (time, point) =>{
+            var cp = document.getElementById('point')
+            var t = document.getElementById('time')
+            var btn = document.getElementById('book')
+            btn.removeAttribute('hidden')
+            cp.value = point
+            t.value = time
+          }
+
+          const openPayOption = () => {
+            console.log('Invoked')
+            document.getElementById('payment').classList.replace('d-none','d-flex')
+          }
+        </script>
+{% endblock %}

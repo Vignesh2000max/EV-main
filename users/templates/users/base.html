@@ -1,0 +1,109 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Charge Station</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=KoHo:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'styles/styles.css' %}">
+
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+              {% if user.is_authenticated %}
+                {% if user.is_manager != True %}
+                  <a class="navbar-brand" href="{% url 'landingPage' %}"><img src="{% static 'images/chargeStation.png' %}" alt="logo" width="40%"></a>
+                {% else %}
+                  <a class="navbar-brand" href="{% url 'manager:managerHome' %}"><img src="{% static 'images/chargeStation.png' %}" alt="logo" width="40%"></a>
+                {% endif%}
+                {% else %}
+                  <a class="navbar-brand" href="{% url 'landingPage' %}"><img src="{% static 'images/chargeStation.png' %}" alt="logo" width="40%"></a>
+              {% endif%}
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                  {% if user.is_authenticated %}
+                    {% if user.is_manager == False %}
+                      <li class="nav-item active-link">
+                        <a class="nav-link active-link" href="{% url 'users:charge' %}">Charge <span class="fa fa-bolt"></span></a>
+                      </li>
+                    {% else %}
+                      <li class="nav-item">
+                        <a class="nav-link active-link" href="{% url 'manager:managerHome' %}">History</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{% url 'manager:manage_slots' %}">Manage Booked slots</a>
+                      </li>
+                    {% endif %}
+                  {% endif %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                  </li>
+                  {% if user.is_authenticated %}
+                  <li class="nav-item">
+                    <form action="{% url 'logoutUser' %}" method="post">
+                      {% csrf_token %}
+                      <button class="btn btn-primary" type="submit">Logout <span class="fa fa-sign-out-alt"></span></button>
+                    </form>
+                  </li>
+                  {% else %}
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'signup' 'signin' 'user' %}">Login</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link btn btn-primary" href="{% url 'signup' 'signup' 'user' %}">Signup</a>
+                  </li>
+                  {% endif %}
+                </ul>
+              </div>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <div class="container-fluid contentContainer">
+          {% block content %}
+          {% endblock %}
+      </div>
+
+      <div class="footer">
+        <div class="footer-content">
+          <div class="footer-section about">
+              <div class="footer-logo">
+                <a href="#"><img src="{% static 'images/chargeStation.png' %}" alt="logo" width="11%"></a>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Aperiam architecto numquam dolorem reprehenderit consequatur. Iusto eaque ab.</p>
+              </div>
+              {% if user.is_authenticated %}
+                <div></div>
+              {% else %}
+                <div class="footer-links">
+                  <a href="{% url 'signup' 'signup' 'manager' %}">Register new charge station</a>  
+                  <a href="{% url 'signup' 'signin' 'user' %}">Login</a>   
+                  <a href="#">About</a>
+                </div>
+              {% endif %}
+          </div>
+          <div class="footer-section footer-bottom">
+            <p>© 2021 Copyright:<a href="#"> chargeStation.com</a></p>
+          </div>
+        </div>
+      </div>
+
+      <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+      <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

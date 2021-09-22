@@ -1,0 +1,82 @@
+{% extends 'users/base.html' %}
+{% block content %}
+<div class="row">
+   <div class="col-md-3 col-sm-2"></div>
+   <div class="col-md-6 col-sm-8 d-flex justify-content-center">
+      <table class="table">
+         <thead class="thead-dark">
+            <tr>
+               <th scope="col">First Name</th>
+               <th scope="col">Last Name</th>
+               <th scope="col">Email</th>
+               <th scope="col">Booked Point</th>
+               <th scope="col">Date & Time</th>
+               <th scope="col"></th>
+            </tr>
+         </thead>
+         {% if histories == None %}
+         <tbody>
+            <tr>
+               <td rowspan=6>Nothing to Show</td>
+            </tr>
+         </tbody>
+         {% else %}
+         <tbody>
+            {% for history in histories %}
+               <tr>
+                   <td>{{ history.user.firstname }}</td>
+                   <td>{{ history.user.lastname }}</td>
+                   <td>{{ history.user.email }}</td>
+                   <td>{{ history.charge_point_number }}</td>
+                   <td>{{ history.booked_date }}, {{ history.slot_booked_time }}</td>
+                   <td>
+                       <button type="button" class="btn" onclick="open_modal('{{ history.id }}', '{{ history.user }}')">
+                           <span class="fa fa-times"></span>
+                       </button>
+                   </td>
+               </tr>
+            {% endfor %} 
+         </tbody>
+         {% endif %}
+      </table>
+   </div>
+</div>
+
+<div onclick="closeModal()" id="modalContainer" class="d-none">
+    <form method="post" action="{% url 'manager:delete_slot' %}" class="modalBox">
+        {% csrf_token %}
+        <span class="deleteText">Are You Sure!!</span>
+        <div>
+            <input type="text" name="slot_id" id="slot_id" value="" hidden>
+            <button class="btn btn-danger" type="submit" id='delete'>Yes</button>
+            <a class="btn btn-default" onclick="closeModal()" id='closeDelete'>No</a>
+        </div>
+    </form>
+</div>
+
+<script>
+    function open_modal(id, user){
+        disableScroll()
+        document.getElementById('slot_id').value = id
+        container = document.getElementById('modalContainer')
+        container.classList.replace('d-none', 'modalContainer')
+    }
+
+    function closeModal(e){
+        container = document.getElementById('modalContainer')
+        container.classList.replace('modalContainer', 'd-none')
+        enableScroll()
+    }
+
+    function disableScroll() {
+        window.scrollTo(0, 0)
+        window.onscroll = function() {
+            window.scrollTo(0, 0);
+        };
+    }
+
+    function enableScroll() {
+        window.onscroll = function() {};
+    }
+</script>
+{% endblock %}

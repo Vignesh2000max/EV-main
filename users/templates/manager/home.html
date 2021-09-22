@@ -1,0 +1,58 @@
+{% extends 'users/base.html' %}
+{% block content %}
+<div class="row">
+   <div class="col-md-12 col-sm-12 d-flex justify-content-center">
+      <p>{{ error }}</p>
+      <div class="row">
+         <div class="col-md-5 col-sm-7">
+            <form class="form" action="" method="post">
+               {% csrf_token %}
+               <div class="form-group">
+                  <label for="filter">Filter</label>
+                  <select name="filter_charge_history" id="filter">
+                     <option value="all">All</option>
+                     <option value="date">Filter By Date</option>
+                  </select>
+                  <button class="btn btn-primary radius-xs" type="submit"><span class="fa fa-search"></span></button>
+               </div>
+            </form>
+         </div>
+      </div>
+   </div>
+</div>
+<div class="row">
+   <div class="col-md-3 col-sm-2"></div>
+   <div class="col-md-6 col-sm-8 d-flex justify-content-center">
+      <table class="table">
+         <thead class="thead-dark">
+            <tr>
+               <th scope="col">First Name</th>
+               <th scope="col">Last Name</th>
+               <th scope="col">Email</th>
+               <th scope="col">Booked Point</th>
+               <th scope="col">Date & Time</th>
+            </tr>
+         </thead>
+         {% if histories == None %}
+         <tbody>
+            <tr>
+               <td rowspan=6>Nothing to Show</td>
+            </tr>
+         </tbody>
+         {% else %}
+         <tbody>
+            {% for history in histories %}
+               <tr>
+                  <td>{{ history.user.firstname }}</td>
+                  <td>{{ history.user.lastname }}</td>
+                  <td>{{ history.user.email }}</td>
+                  <td>{{ history.charge_point_number }}</td>
+                  <td>{{ history.booked_date }}, {{ history.slot_booked_time }}</td>
+               </tr>
+            {% endfor %} 
+         </tbody>
+         {% endif %}
+      </table>
+   </div>
+</div>
+{% endblock %}

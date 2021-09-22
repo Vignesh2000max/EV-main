@@ -1,0 +1,115 @@
+{% extends 'users/base.html' %}
+{% load static %}
+{% block content %}
+    <div class="row justify-content-center">
+        <!-- <div class="col-md-3 col-sm-3"></div> -->
+        <div class="col-md-6 col-sm-6 formContainer">
+            <div class="row">
+                <div class="col-md-12 formSwitch mb-3">
+                    <div class="row pl-4 pt-3">
+                {% if form_opened == True %}
+                        <a id="toggle-signup" class="col-md-2 col-sm-2 col-2 switchs active">Signup</a>
+                        <a id="toggle-signin" class="col-md-2 col-sm-2 col-2 pl-2 switchs">Signin</a> 
+                    </div>
+                </div>
+                <div id="signup" class="col-md-12 signupContainer">
+                {% else %}
+                        <a id="toggle-signup" class="col-md-2 col-sm-2 col-2 switchs">Signup</a>
+                        <a id="toggle-signin" class="col-md-2 col-sm-2 col-2 pl-2 switchs active">Signin</a> 
+                    </div>
+                </div>
+                <div id="signup" class="col-md-12 signupContainer d-none">
+                {% endif %}
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <div class="alert alert-warning" role="alert" id='alert'>
+                            {{ error }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>     
+                        </div>
+                        <div class="alert-box d-none" role="alert" id='alert'>    
+                        </div>
+                        <input type="text" value="signup" name='req_type' hidden>
+                        {% if usertype == 'manager' %}
+                        <input type="text" value="manager" id='u_type' hidden>
+                        <div class="form-group">
+                            <input id="station_name" class="mr-2" type="text" name="station_name" placeholder="Charge Station Name" required>
+                            <input id="num_points" type="number" name="num_points" placeholder="Total Charge Points Available" required>
+                        </div>
+                        {% else %}
+                        <input type="text" value="user" id='u_type' hidden>
+                        <div class="form-group">
+                            <input id="fname" class="mr-2" type="text" name="fname" placeholder="First Name" required>
+                            <input id="lname" type="text" name="lname" placeholder="Last Name" required>
+                        </div>
+                        {% endif %}
+                        <div class="form-group">
+                            <input id="uname" class="mr-2" type="text" name="uname" placeholder="Username" required>
+                            <input id="email" type="text" name="email" placeholder="Email" required>
+                        </div>
+                        <div class="form-group">
+                            <textarea id="address" name="address" rows="4" cols="60" placeholder="Address" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <select id="city" class="mr-2" name="city">
+                                <option value="">Select City</option>
+                                <option value="mysore">Mysore</option>
+                                <option value="bangalore">Bangalore</option>
+                            </select>
+                            <select id="state" name="state">
+                                <option value="">Select State</option>
+                                <option value="karnataka">Karnataka</option>
+                            </select>                       
+                        </div>
+                        {% if usertype == 'manager' %}
+                        <div class="form-group" id="area">
+                                             
+                        </div>
+                        {% endif %}
+                        <div class="form-group">
+                            <input id="pin" class="mr-2" type="text" name="pin" placeholder="Pin" required>
+                            <input id="contact" type="tel" name="contact" placeholder="Contact" required>
+                        </div>
+                        <div class="form-group">
+                            <input id="password" type="password" name="password" placeholder="Password" required>
+                        </div>
+                        <div class="form-group">
+                            <input id="con_password" type="password" name="con_password" placeholder="Confirm Password" required>
+                        </div>
+                        <div class="form-group d-flex justify-content-center">
+                            <button type="submit" class="btn btn-secondary" id="signup-btn">Signup</button>
+                        </div>
+                    </form>
+                </div>
+                {% if form_opened == False %}
+                <div id="signin" class="col-md-12 signupContainer">
+                {% else %}
+                <div id="signin" class="col-md-12 signupContainer d-none">
+                {% endif %}
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <div class="alert alert-warning" role="alert" id='alert'>
+                            {{ loginerror }}  
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>  
+                        </div>
+                        <input type="text" name="req_type" value="signin" hidden>
+                        <div class="alert-box d-none" role="alert" id='alert'>    
+                        </div>
+                        <div class="form-group">
+                            <input type="email" name="email" placeholder="Email" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" name="password" placeholder="Password" required>
+                        </div>
+                        <div class="form-group d-flex justify-content-center">
+                            <button type="submit" class="btn btn-secondary">Login</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
